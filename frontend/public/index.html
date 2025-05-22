@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Görev Uygulaması</title>
+</head>
+<body>
+  <h3>Görevler</h3>
+
+  <input type="text" id="taskInput" placeholder="Yeni görev...">
+  <button onclick="addTask()">Ekle</button>
+
+  <ul id="taskList"></ul>
+
+  <script>
+    const apiUrl = "http://localhost:8080/api/tasks";
+
+    function fetchTasks() {
+      fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+          const list = document.getElementById("taskList");
+          list.innerHTML = "";
+          data.forEach(task => {
+            const li = document.createElement("li");
+            li.textContent = task.description;
+            list.appendChild(li);
+          });
+        });
+    }
+
+    function addTask() {
+      const input = document.getElementById("taskInput");
+      fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description: input.value })
+      }).then(() => {
+        input.value = "";
+        fetchTasks();
+      });
+    }
+
+    window.onload = fetchTasks;
+  </script>
+</body>
+</html>
